@@ -38,7 +38,7 @@ namespace FileSystemSizeList.ViewModels
 
             _selectedPath.Value = dialog.SelectedPath;
             return _model.UpdateFileSystemInfoListAsync(
-                _selectedPath.Value
+                dialog.SelectedPath
             );
         }
     }
