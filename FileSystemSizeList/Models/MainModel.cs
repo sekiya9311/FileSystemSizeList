@@ -20,10 +20,10 @@ namespace FileSystemSizeList.Models
         {
             _fileSystemInfoList.ClearOnScheduler();
 
-            long Dfs(string curPath)
+            (long byteSize, long fileCount) Dfs(string curPath)
             {
                 if (File.Exists(curPath))
-                    return new FileInfo(curPath).Length;
+                    return (new FileInfo(curPath).Length, 1);
 
                 return Directory
                     .EnumerateFileSystemEntries(curPath)
@@ -32,15 +32,19 @@ namespace FileSystemSizeList.Models
                         var nxtPath = Path.Combine(curPath, x);
                         return Dfs(nxtPath);
                     })
-                    .Sum();
+                    .DefaultIfEmpty()
+                    .Aggregate((acc, cur) => (
+                        acc.byteSize + cur.byteSize,
+                        acc.fileCount + cur.fileCount));
             }
 
             var tasks = Directory.EnumerateFileSystemEntries(path)
                 .Select(names => Task.Run(() =>
                 {
                     var nxtPath = Path.Combine(path, names);
+                    var (size, count) = Dfs(nxtPath);
                     _fileSystemInfoList.AddOnScheduler(
-                        new FileSystemInfo(names, Dfs(nxtPath)));
+                        new FileSystemInfo(names, size, count));
                 }));
             return Task.WhenAll(tasks);
         }

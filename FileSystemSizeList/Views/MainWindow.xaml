@@ -30,6 +30,8 @@
                                     DisplayMemberBinding="{Binding Path=Name}" />
                     <GridViewColumn Header="Size[MB]"
                                     DisplayMemberBinding="{Binding Path=MegaByteSize}" />
+                    <GridViewColumn Header="File Count"
+                                    DisplayMemberBinding="{Binding Path=FileCount}" />
                 </GridView>
             </ListView.View>
         </ListView>

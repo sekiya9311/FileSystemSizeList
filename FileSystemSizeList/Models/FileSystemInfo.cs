@@ -16,10 +16,13 @@ namespace FileSystemSizeList.Models
 
         public double MegaByteSize => ByteSize / 1e6;
 
-        public FileSystemInfo(string path, long byteSize)
+        public long FileCount { get; }
+
+        public FileSystemInfo(string path, long byteSize, long fileCount)
         {
             Path = path;
             ByteSize = byteSize;
+            FileCount = fileCount;
         }
 
         public bool Equals([AllowNull] FileSystemInfo other)
