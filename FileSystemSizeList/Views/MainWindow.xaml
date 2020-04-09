@@ -3,8 +3,35 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="350" Width="525" >
+        Title="FileSystemSizeList" Height="350" Width="525" >
     <Grid>
-        <ContentControl prism:RegionManager.RegionName="ContentRegion" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="12*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Label Grid.Row="0"
+               Grid.Column="0"
+               Content="{Binding SelectedPath.Value}"/>
+        <Button Grid.Row="0"
+                Grid.Column="1"
+                Content="ディレクトリ選択"
+                Command="{Binding SelectPathCommand}" />
+        <ListView Grid.Row="1"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="2"
+                  ItemsSource="{Binding FileSystemInfoList}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Name"
+                                    DisplayMemberBinding="{Binding Path=Name}" />
+                    <GridViewColumn Header="Size[MB]"
+                                    DisplayMemberBinding="{Binding Path=MegaByteSize}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>
