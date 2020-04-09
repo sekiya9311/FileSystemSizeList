@@ -27,11 +27,7 @@ namespace FileSystemSizeList.Models
 
                 return Directory
                     .EnumerateFileSystemEntries(curPath)
-                    .Select(x =>
-                    {
-                        var nxtPath = Path.Combine(curPath, x);
-                        return Dfs(nxtPath);
-                    })
+                    .Select(Dfs)
                     .DefaultIfEmpty()
                     .Aggregate((acc, cur) => (
                         acc.byteSize + cur.byteSize,
@@ -39,12 +35,11 @@ namespace FileSystemSizeList.Models
             }
 
             var tasks = Directory.EnumerateFileSystemEntries(path)
-                .Select(name => Task.Run(() =>
+                .Select(nxtPath => Task.Run(() =>
                 {
-                    var nxtPath = Path.Combine(path, name);
                     var (size, count) = Dfs(nxtPath);
                     _fileSystemInfoList.AddOnScheduler(
-                        new FileSystemInfo(name, size, count));
+                        new FileSystemInfo(nxtPath, size, count));
                 }));
             return Task.WhenAll(tasks);
         }
