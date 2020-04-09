@@ -39,12 +39,12 @@ namespace FileSystemSizeList.Models
             }
 
             var tasks = Directory.EnumerateFileSystemEntries(path)
-                .Select(names => Task.Run(() =>
+                .Select(name => Task.Run(() =>
                 {
-                    var nxtPath = Path.Combine(path, names);
+                    var nxtPath = Path.Combine(path, name);
                     var (size, count) = Dfs(nxtPath);
                     _fileSystemInfoList.AddOnScheduler(
-                        new FileSystemInfo(names, size, count));
+                        new FileSystemInfo(name, size, count));
                 }));
             return Task.WhenAll(tasks);
         }
