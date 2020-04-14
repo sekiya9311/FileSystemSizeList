@@ -1,8 +1,12 @@
-﻿using FileSystemSizeList.Models;
+﻿using System;
+using FileSystemSizeList.Models;
 using Prism.Mvvm;
 using Reactive.Bindings;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Reactive.Linq;
+using Reactive.Bindings.Extensions;
+using System.Linq;
 
 namespace FileSystemSizeList.ViewModels
 {
@@ -14,6 +18,10 @@ namespace FileSystemSizeList.ViewModels
             => _selectedPath.ToReadOnlyReactivePropertySlim();
 
         public ReadOnlyReactiveCollection<FileSystemInfo> FileSystemInfoList { get; }
+
+        public ReadOnlyReactivePropertySlim<long> FileCountSum { get; }
+
+        public ReadOnlyReactivePropertySlim<long> ByteSizeSum { get; }
 
         public AsyncReactiveCommand SelectPathCommand { get; }
 
@@ -28,6 +36,17 @@ namespace FileSystemSizeList.ViewModels
                 .WithSubscribe(SelectPathAsync);
             FileSystemInfoList = _model.FileSystemInfoList
                 .ToReadOnlyReactiveCollection();
+
+            FileCountSum = FileSystemInfoList
+                .CollectionChangedAsObservable()
+                .ToUnit()
+                .Select(_ => FileSystemInfoList.Sum(x => x.FileCount))
+                .ToReadOnlyReactivePropertySlim();
+            ByteSizeSum = FileSystemInfoList
+                .CollectionChangedAsObservable()
+                .ToUnit()
+                .Select(_ => FileSystemInfoList.Sum(x => x.ByteSize))
+                .ToReadOnlyReactivePropertySlim();
         }
 
         public Task SelectPathAsync()
